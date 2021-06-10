@@ -16,19 +16,19 @@ screen.style.overflow = "hidden";
 // Create the platform
 const heightPlatform = 20;
 const platforms = [
-  { top: 80, left: 10, width: 45, },
+  { top: 80, left: 10, width: 45 },
   { top: 150, left: 30, width: 45 },
   { top: 220, left: 50, width: 45 },
   { top: 290, left: 70, width: 45 },
   { top: 360, left: 90, width: 45 },
   { top: 430, left: 110, width: 45 },
-  { top: 80, right: 10, width: 45 },
-  { top: 150, right: 30, width: 45 },
-  { top: 220, right: 50, width: 45 },
-  { top: 290, right: 70, width: 45 },
-  { top: 360, right: 90, width: 45 },
-  { top: 430, right: 110, width: 45 },
-  
+  { top: 80, left: 390, width: 45 },
+  { top: 150, left: 370, width: 45 },
+  { top: 220, left: 350, width: 45 },
+  { top: 290, left: 330, width: 45 },
+  { top: 360, left: 310, width: 45 },
+  { top: 430, left: 290, width: 45 },
+
 ];
 
 function createPlatorm(d) {
@@ -68,7 +68,7 @@ class Tonneau {
       this.posY += 5;
       this.t.style.top = `${this.posY}px`;
       this.detectionSurface();
-    }, 10);
+    }, 50);
   }
 
   getT() {
@@ -77,42 +77,48 @@ class Tonneau {
 
   // TODO
   detectionSurface = () => {
-	platforms.forEach(plat => {
-		if (intersectRect(this, plat))
+
+	let baseA;
+	let baseB;
+	let baseZ; 
+
+	//point gauche du tonneau
+	let pointXa = this.posX  
+	//point droit du tonneau 
+	let pointXb = this.posX + 30
+	//position top + hauteur du tonneau + marge 
+	let baseY = this.posY + 22 + 22
+
+
+	platforms.forEach((e)=>{
+
+		//si tonneau part coté gauche
+		if(e.left) { 
+		//plateform position gauche point gauche                                       
+		baseA = e.left   
+		//plateform position gauche point droit                                       
+		baseB = e.left+e.width   
+		//platform position top
+		baseZ = e.top+heightPlatform
+
+		if(pointXa <= baseB && pointXb >= baseA && baseY >= baseZ){ 
+			//collision clearInterval
 			clearInterval(this.intervalID);
-	});
-  }
+		}
+	}
+ })
 
 }
 
-function intersectRect(a, b) {
-	const rect1 = {
-		x: a.posX,
-		y: a.posY,
-		width: 30,
-		height: 22
-	};
-	const rect2 = {
-		x: b.left !== undefined ? b.left : b.right,
-		y: b.top,
-		width: 45,
-		height: 20
-	};
-
-	const isInHoriztonalBounds =
-    	rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x;
-	const isInVerticalBounds =
-		rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
-	const isOverlapping = isInHoriztonalBounds && isInVerticalBounds;
-	return isOverlapping;
 }
+
 
 function generateTonneau() {
   setInterval(() => {
     const randomX = Math.floor(Math.random() * widthScreen);
     const newT = new Tonneau(randomX);
     screen.appendChild(newT.getT());
-  }, 500);
+  }, 2000);
 }
 
 // Append the platform
